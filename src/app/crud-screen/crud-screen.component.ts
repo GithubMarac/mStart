@@ -198,7 +198,7 @@ export class CrudScreenComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (this.selectedAccount) {
+        if (account) {
           this.updateAccount();
           this.selectedAccount = account;
         } else {

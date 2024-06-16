@@ -34,4 +34,8 @@ export class ApplicationDialogComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  onSave() {
+    this.dialogRef.close();
+  }
 }

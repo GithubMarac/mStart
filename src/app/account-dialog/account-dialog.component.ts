@@ -40,4 +40,9 @@ export class AccountDialogComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  onSave() {
+    this.dialogRef.close();
+  }
+
 }
