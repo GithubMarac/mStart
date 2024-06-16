@@ -15,7 +15,7 @@ import { ApplicationDialogComponent } from '../application-dialog/application-di
 export class CrudScreenComponent implements OnInit {
   accounts: any[] = [];
   applications: any[] = [];
-  selectedAccount: any;
+  selectedAccount: any = null;
   accountForm: FormGroup;
   appForm: FormGroup;
   selectedApplication: any = null;
@@ -128,10 +128,9 @@ export class CrudScreenComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(result.id)
-        console.log(this.selectedAccount)
-        if (result.id) {
+        if (this.selectedAccount) {
           this.updateAccount();
+          this.selectedAccount = account;
         } else {
           this.addAccount();
         }
@@ -154,8 +153,9 @@ openApplicationDialog(app?: any) {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (result.id) {
+        if (this.selectedApplication) {
           this.updateApplication();
+          this.selectedApplication = null;
         } else {
           this.addApplication();
         }
