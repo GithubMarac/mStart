@@ -1,7 +1,24 @@
 <div class="crud-container">
     <div class="account-section">
       <h2>Accounts</h2>
-      <table mat-table [dataSource]="accounts" class="mat-elevation-z8">
+
+      <div class="filter-container">
+        <mat-form-field>
+          <input matInput (keyup)="applyAccountFilter($event)" placeholder="Filter by Email" #emailFilter>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [matDatepicker]="startPicker" placeholder="Date of Birth From" (dateChange)="applyDateFilter()" #startDateFilter>
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [matDatepicker]="endPicker" placeholder="Date of Birth To" (dateChange)="applyDateFilter()" #endDateFilter>
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <table mat-table [dataSource]="filteredAccounts" class="mat-elevation-z8">
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef> Email </th>
           <td mat-cell *matCellDef="let element"> {{element.email}} </td>
@@ -43,7 +60,17 @@
   
     <div class="application-section" *ngIf="selectedAccount">
       <h2>Applications</h2>
-      <table mat-table [dataSource]="applications" class="mat-elevation-z8">
+
+      <div class="filter-container">
+        <mat-form-field>
+          <input matInput (keyup)="applyApplicationFilter($event)" placeholder="Filter by Name" #nameFilter>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput (keyup)="applyApplicationFilter($event)" placeholder="Filter by Version" #versionFilter>
+        </mat-form-field>
+      </div>
+
+      <table mat-table [dataSource]="filteredApplications" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Name </th>
           <td mat-cell *matCellDef="let element"> {{element.name}} </td>

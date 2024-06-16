@@ -1,11 +1,30 @@
 // crud-screen.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild  } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FirestoreService } from '../../firestoreService';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Timestamp } from '@angular/fire/firestore';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
 import { AccountDialogComponent } from '../account-dialog/account-dialog.component';
 import { ApplicationDialogComponent } from '../application-dialog/application-dialog.component';
+
+
+export interface Account {
+  id?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date | null;
+  active: boolean;
+}
+
+export interface Application {
+  id?: string;
+  name: string;
+  version: string;
+  url: string;
+  accountId: string;
+}
 
 @Component({
   selector: 'app-crud-screen',
@@ -19,6 +38,17 @@ export class CrudScreenComponent implements OnInit {
   accountForm: FormGroup;
   appForm: FormGroup;
   selectedApplication: any = null;
+
+  filteredAccounts: MatTableDataSource<any>;
+  filteredApplications: MatTableDataSource<any>;
+
+  private subscriptions: Subscription[] = [];
+
+  @ViewChild('emailFilter') emailFilter: any;
+  @ViewChild('startDateFilter') startDateFilter: any;
+  @ViewChild('endDateFilter') endDateFilter: any;
+  @ViewChild('nameFilter') nameFilter: any;
+  @ViewChild('versionFilter') versionFilter: any;
 
   displayedColumns: string[] = ['email', 'firstName', 'lastName', 'dateOfBirth', 'active', 'actions'];
   appDisplayedColumns: string[] = ['name', 'version', 'url', 'actions'];
@@ -40,6 +70,9 @@ export class CrudScreenComponent implements OnInit {
       url: [''],
       accountId: ['']
     });
+
+    this.filteredAccounts = new MatTableDataSource(this.accounts);
+    this.filteredApplications = new MatTableDataSource(this.applications);
   }
 
   ngOnInit(): void {
@@ -47,16 +80,53 @@ export class CrudScreenComponent implements OnInit {
   }
 
   loadAccounts() {
-    this.firestoreService.getAccounts().subscribe(data => {
-      this.accounts = data;
-    });
+    this.subscriptions.push(
+      this.firestoreService.getAccounts().subscribe(data => {
+        this.accounts = data.map((account) => ({
+          ...account,
+        }));
+        this.filteredAccounts.data = this.accounts;
+      })
+    );
   }
 
   loadApplications(accountId: string) {
     this.firestoreService.getApplicationsByAccountId(accountId).subscribe(data => {
-      this.applications = data;
+      this.filteredApplications.data = data;
     });
   }
+
+  applyAccountFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.filteredAccounts.filterPredicate = (data, filter) => {
+      return data.email.toLowerCase().includes(filter);
+    };
+    this.filteredAccounts.filter = filterValue;
+  }
+
+  applyDateFilter() {
+    const startDate = this.startDateFilter.nativeElement.value;
+    const endDate = this.endDateFilter.nativeElement.value;
+
+    this.filteredAccounts.filterPredicate = (data, filter) => {
+      const dateOfBirth = new Date(data.dateOfBirth);
+      return (!startDate || new Date(startDate) <= dateOfBirth) && (!endDate || dateOfBirth <= new Date(endDate));
+    };
+
+    // Trigger the filter
+    this.filteredAccounts.filter = '' + Math.random();
+  }
+
+  applyApplicationFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.filteredApplications.filterPredicate = (data, filter) => {
+      const filterName = this.nameFilter.nativeElement.value.trim().toLowerCase();
+      const filterVersion = this.versionFilter.nativeElement.value.trim().toLowerCase();
+      return data.name.toLowerCase().includes(filterName) && data.version.toLowerCase().includes(filterVersion);
+    };
+    this.filteredApplications.filter = filterValue;
+  }
+
 
   selectAccount(account: any) {
     this.selectedAccount = account;
