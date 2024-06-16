@@ -24,6 +24,7 @@ import { ApplicationsGridComponent } from './applications-grid/applications-grid
 import { CrudScreenComponent } from './crud-screen/crud-screen.component';
 import { AccountDialogComponent } from './account-dialog/account-dialog.component';
 import { ApplicationDialogComponent } from './application-dialog/application-dialog.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ApplicationDialogComponent } from './application-dialog/application-dia
     ApplicationsGridComponent,
     CrudScreenComponent,
     AccountDialogComponent,
-    ApplicationDialogComponent
+    ApplicationDialogComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
